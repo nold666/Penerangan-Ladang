@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AgriLux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--g50:#f0fdf4;--g100:#dcfce7;--g200:#bbf7d0;--g400:#4ade80;--g500:#22c55e;--g600:#16a34a;--g700:#15803d;--g800:#166534;
+--e500:#10b981;--e600:#059669;
+--cream:#fafaf5;--sand:#f5f0e8;
+--tp:#1a1f16;--ts:#4a5568;--tm:#718096;
+--sh:0 1px 3px rgba(0,0,0,.06);--shm:0 4px 12px rgba(0,0,0,.08);--shl:0 10px 30px rgba(0,0,0,.1);
+--r:12px;--rl:16px;--rxl:24px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#f7f9f4;color:var(--tp);line-height:1.6;overflow-x:hidden}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:#f0fdf4;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s}
+#loading.gone{opacity:0;pointer-events:none}
+.ld-logo{font-family:'Poppins',sans-serif;font-size:2rem;font-weight:700;color:var(--g600);margin-bottom:.5rem}
+.ld-sub{font-size:.82rem;color:var(--tm);margin-bottom:1.25rem}
+.ld-bar{width:220px;height:4px;background:var(--g100);border-radius:2px;overflow:hidden}
+.ld-fill{height:100%;background:var(--g500);border-radius:2px;animation:ldFill 1.6s ease forwards}
+@keyframes ldFill{0%{width:0}100%{width:100%}}
+
+/* PROGRESS */
+#prog{position:fixed;top:64px;left:0;height:2px;background:linear-gradient(90deg,var(--g400),var(--e500));z-index:101;width:0%;transition:width .08s}
+
+/* NAVBAR */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(247,249,244,.94);backdrop-filter:blur(14px);border-bottom:1px solid rgba(34,197,94,.12);height:64px;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-brand{display:flex;align-items:center;gap:9px;font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;color:var(--g700);white-space:nowrap;flex-shrink:0}
+.nav-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--g500),var(--e500));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.nav-links{display:flex;gap:.25rem;align-items:center;flex-wrap:wrap}
+.nav-links a{font-size:.82rem;color:var(--ts);text-decoration:none;font-weight:500;padding:.4rem .7rem;border-radius:8px;transition:all .18s;cursor:pointer;white-space:nowrap}
+.nav-links a:hover{color:var(--g700);background:var(--g50)}
+.nav-pill{background:var(--g600)!important;color:white!important;padding:.4rem .9rem!important;border-radius:20px!important}
+.nav-pill:hover{background:var(--g700)!important;color:white!important}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 2rem 4rem;background:linear-gradient(160deg,#f0fdf4 0%,#fafaf5 45%,#f0faf5 100%);position:relative;overflow:hidden;text-align:center}
+.hero-bg1{position:absolute;width:600px;height:600px;background:var(--g400);border-radius:50%;opacity:.06;top:-200px;right:-100px;animation:fl1 8s ease-in-out infinite}
+.hero-bg2{position:absolute;width:400px;height:400px;background:var(--e500);border-radius:50%;opacity:.06;bottom:-100px;left:-100px;animation:fl2 10s ease-in-out infinite}
+@keyframes fl1{0%,100%{transform:translateY(0)}50%{transform:translateY(-28px)}}
+@keyframes fl2{0%,100%{transform:translateY(0)}50%{transform:translateY(20px)}}
+.particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.particle{position:absolute;border-radius:50%;opacity:.12;animation:pfloat linear infinite}
+@keyframes pfloat{0%{transform:translateY(100vh) scale(0);opacity:.12}100%{transform:translateY(-100px) scale(1);opacity:0}}
+.hero-content{position:relative;z-index:1;max-width:720px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.2);color:var(--g700);padding:.35rem 1rem;border-radius:20px;font-size:.78rem;font-weight:600;margin-bottom:1.5rem;animation:fadeUp .7s ease both}
+.hero-dot{width:6px;height:6px;background:var(--g500);border-radius:50%;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.6}}
+.hero-subtitle{font-size:.88rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--g600);margin-bottom:.5rem;animation:fadeUp .7s .1s ease both}
+.hero h1{font-family:'Poppins',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;line-height:1.2;color:var(--tp);margin-bottom:.5rem;animation:fadeUp .7s .15s ease both}
+.hero h1 span{color:var(--g600)}
+.hero-tagline{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);margin-bottom:.75rem;animation:fadeUp .7s .2s ease both}
+.hero p{font-size:1rem;color:var(--ts);margin-bottom:2rem;animation:fadeUp .7s .28s ease both;max-width:520px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;gap:.75rem;justify-content:center;animation:fadeUp .7s .38s ease both;flex-wrap:wrap}
+.btn-p{background:var(--g600);color:white;padding:.72rem 1.6rem;border-radius:12px;border:none;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-p:hover{background:var(--g700);transform:translateY(-2px);box-shadow:0 8px 20px rgba(22,163,74,.3)}
+.btn-s{background:white;color:var(--g700);padding:.72rem 1.6rem;border-radius:12px;border:2px solid rgba(22,163,74,.25);font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-s:hover{border-color:var(--g500);background:var(--g50);transform:translateY(-2px)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-stats{display:flex;justify-content:center;gap:2.5rem;margin-top:2.5rem;animation:fadeUp .7s .5s ease both;flex-wrap:wrap}
+.hstat .n{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:700;color:var(--g600)}
+.hstat .l{font-size:.72rem;color:var(--tm)}
+
+/* SECTION BASE */
+section{padding:5rem 2rem}
+.container{max-width:1100px;margin:0 auto}
+.sec-tag{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--g600);margin-bottom:.4rem}
+.sec-title{font-family:'Poppins',sans-serif;font-size:clamp(1.4rem,3vw,1.85rem);font-weight:700;color:var(--tp);margin-bottom:.6rem;line-height:1.25}
+.sec-desc{color:var(--ts);font-size:.92rem;max-width:480px}
+
+.fade-in{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.fade-in.vis{opacity:1;transform:none}
+
+/* INPUT */
+#input-section{background:white}
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}
+@media(max-width:600px){.input-grid{grid-template-columns:1fr}}
+.icard{background:var(--cream);border:1px solid rgba(22,163,74,.13);border-radius:var(--rl);padding:1.4rem;transition:box-shadow .2s}
+.icard:hover{box-shadow:var(--shm)}
+.icard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+.icard-label{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.07em}
+.icard-icon{width:28px;height:28px;background:var(--g100);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.icard-max{font-size:.7rem;color:var(--tm);background:rgba(0,0,0,.04);padding:.15rem .5rem;border-radius:6px;font-weight:500}
+.val-display{font-family:'Poppins',sans-serif;font-size:2.2rem;font-weight:700;color:var(--g600);margin-bottom:.2rem;line-height:1}
+.val-unit{font-size:.8rem;color:var(--tm);margin-bottom:.75rem}
+.slider-wrap{position:relative}
+input[type=range]{width:100%;height:6px;-webkit-appearance:none;background:#e2e8f0;border-radius:3px;outline:none;cursor:pointer;display:block}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--g600);border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(22,163,74,.4);cursor:pointer}
+.slider-row{display:flex;justify-content:space-between;font-size:.68rem;color:var(--tm);margin-top:.3rem}
+.manual-input-wrap{display:flex;align-items:center;gap:.5rem;margin-top:.75rem}
+.manual-input-wrap label{font-size:.72rem;color:var(--tm);white-space:nowrap;font-weight:500}
+.manual-input{width:90px;padding:.3rem .6rem;border:1px solid rgba(22,163,74,.25);border-radius:8px;font-size:.88rem;font-weight:600;color:var(--g700);font-family:'Poppins',sans-serif;outline:none;text-align:center;background:white;transition:border-color .2s}
+.manual-input:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+.lahan-info-bar{margin-top:1.5rem;background:var(--g50);border-radius:var(--rl);padding:1.1rem 1.4rem;display:flex;align-items:center;gap:1rem;border:1px solid rgba(22,163,74,.15)}
+
+/* DASHBOARD */
+#dashboard{background:var(--cream)}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-top:2rem}
+.dcard{background:white;border-radius:var(--rl);padding:1.2rem;border:1px solid rgba(0,0,0,.06);box-shadow:var(--sh);transition:transform .2s,box-shadow .2s;cursor:default}
+.dcard:hover{transform:translateY(-3px);box-shadow:var(--shm)}
+.dcard-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:.7rem}
+.dcard-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--tm);margin-bottom:.2rem}
+.dcard-val{font-family:'Poppins',sans-serif;font-size:1.45rem;font-weight:700;color:var(--tp)}
+.dcard-unit{font-size:.72rem;color:var(--tm);font-weight:400}
+
+/* TABLE */
+#table-section{background:white}
+.table-wrap{overflow-x:auto;margin-top:1.75rem;border-radius:var(--rl);border:1px solid rgba(0,0,0,.08)}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+th{background:var(--g50);color:var(--g800);font-weight:700;padding:.85rem 1rem;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid rgba(22,163,74,.15);white-space:nowrap}
+td{padding:.8rem 1rem;border-bottom:1px solid rgba(0,0,0,.05);color:var(--ts);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--g50);transition:background .15s}
+.badge{display:inline-flex;align-items:center;padding:.22rem .6rem;border-radius:20px;font-size:.7rem;font-weight:700}
+.bg-green{background:var(--g100);color:var(--g800)}
+.bg-blue{background:#dbeafe;color:#1e40af}
+.bg-orange{background:#ffedd5;color:#c2410c}
+.bg-rec{background:var(--g600);color:white}
+
+/* COST */
+#cost-section{background:var(--cream)}
+.toggle-grp{display:inline-flex;gap:3px;background:white;padding:3px;border-radius:9px;border:1px solid rgba(0,0,0,.08);margin-bottom:1.25rem}
+.tgl-btn{padding:.38rem .95rem;border-radius:7px;border:none;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;color:var(--ts);background:transparent}
+.tgl-btn.on{background:var(--g600);color:white}
+
+/* HEATMAP — IMPROVED */
+#heatmap-section{background:white}
+.hmap-container{margin-top:2rem;background:linear-gradient(145deg,#0f2d1a,#1a3d24);border-radius:20px;padding:1.5rem;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.hmap-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem}
+.hmap-title{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:600;color:white}
+.hmap-meta{display:flex;gap:.75rem;flex-wrap:wrap}
+.hmap-chip{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);padding:.25rem .7rem;border-radius:20px;font-size:.72rem;font-weight:500;border:1px solid rgba(255,255,255,.12)}
+.hmap-chip.active{background:rgba(34,197,94,.3);border-color:rgba(34,197,94,.5);color:#86efac}
+#heatmapCanvas{display:block;width:100%;border-radius:12px;cursor:crosshair}
+.hmap-controls{display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;align-items:center}
+.hmap-ctrl-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:.35rem .85rem;border-radius:8px;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif}
+.hmap-ctrl-btn:hover{background:rgba(255,255,255,.2);color:white}
+.hmap-ctrl-btn.on{background:rgba(34,197,94,.35);border-color:rgba(34,197,94,.5);color:#86efac}
+.hmap-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;align-items:center}
+.hleg-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:rgba(255,255,255,.65)}
+.hleg-dot{width:11px;height:11px;border-radius:3px}
+#hmap-tooltip-box{position:absolute;background:rgba(5,20,10,.92);border:1px solid rgba(34,197,94,.3);color:white;padding:.45rem .85rem;border-radius:10px;font-size:.75rem;pointer-events:none;opacity:0;transition:opacity .12s;white-space:nowrap;backdrop-filter:blur(4px);z-index:10}
+.hmap-info-bar{display:flex;gap:1.25rem;margin-top:1rem;flex-wrap:wrap}
+.hmap-stat{text-align:center;background:rgba(255,255,255,.07);border-radius:10px;padding:.6rem 1rem;border:1px solid rgba(255,255,255,.08);flex:1;min-width:80px}
+.hmap-stat-val{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:#86efac}
+.hmap-stat-lbl{font-size:.65rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em;margin-top:.1rem}
+
+/* INSIGHTS */
+#insights-section{background:var(--cream)}
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1.1rem;margin-top:1.75rem}
+.ins-card{background:white;border-radius:var(--rl);padding:1.35rem;border:1px solid rgba(0,0,0,.07);box-shadow:var(--sh)}
+.ins-head{display:flex;align-items:center;gap:9px;margin-bottom:.85rem}
+.ins-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.ins-name{font-weight:700;font-size:.85rem;color:var(--tp)}
+.ins-val{font-family:'Poppins',sans-serif;font-size:1.75rem;font-weight:700;color:var(--g600)}
+.ins-sub{font-size:.75rem;color:var(--tm);margin-top:.2rem}
+.prog-wrap{background:var(--g50);border-radius:10px;height:7px;overflow:hidden;margin-top:.6rem}
+.prog-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--g500),var(--e500));transition:width 1s ease}
+
+/* RECOMMENDATION */
+#rec-section{background:white}
+.rec-card{background:linear-gradient(135deg,var(--g50) 0%,rgba(16,185,129,.05) 100%);border:1px solid rgba(22,163,74,.2);border-radius:var(--rxl);padding:2.25rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;margin-top:1.75rem;position:relative;overflow:hidden}
+.rec-glow{position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(34,197,94,.12) 0%,transparent 70%);pointer-events:none}
+.rec-left{flex:1;min-width:240px}
+.rec-badge{display:inline-flex;align-items:center;gap:6px;background:var(--g600);color:white;padding:.28rem .85rem;border-radius:20px;font-size:.72rem;font-weight:700;margin-bottom:.9rem;animation:pulseBadge 2.5s ease infinite}
+@keyframes pulseBadge{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.4)}60%{box-shadow:0 0 0 8px rgba(22,163,74,0)}}
+.rec-title{font-family:'Poppins',sans-serif;font-size:1.45rem;font-weight:700;color:var(--tp);margin-bottom:.4rem}
+.rec-desc{font-size:.86rem;color:var(--ts)}
+.rec-items{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-top:1.1rem}
+.rec-item{background:white;border-radius:var(--r);padding:.8rem 1rem;border:1px solid rgba(22,163,74,.12)}
+.rec-item-lbl{font-size:.68rem;color:var(--tm);font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.rec-item-val{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;color:var(--g700);margin-top:.12rem}
+.rec-right{width:180px;text-align:center;flex-shrink:0}
+.score-ring{position:relative;width:110px;height:110px;margin:0 auto .75rem}
+.score-ring svg{transform:rotate(-90deg)}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:700;color:var(--g600)}
+.score-lbl{font-size:.75rem;color:var(--tm)}
+
+/* MODEL MATH */
+#model-section{background:var(--cream)}
+.math-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.1rem;margin-top:1.75rem}
+.math-card{background:white;border-radius:var(--rl);padding:1.4rem;border:1px solid rgba(0,0,0,.08)}
+.math-tag{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--g600);margin-bottom:.6rem}
+.math-eq{font-family:'Courier New',monospace;font-size:.98rem;font-weight:600;color:var(--tp);background:var(--g50);padding:.55rem .9rem;border-radius:8px;border-left:3px solid var(--g500);margin-bottom:.65rem}
+.math-desc{font-size:.81rem;color:var(--ts);line-height:1.6}
+
+/* EXTRA */
+#extra-section{background:white}
+.extra-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:1rem;margin-top:1.75rem}
+.extra-card{background:var(--cream);border-radius:var(--rl);padding:1.1rem 1.2rem;border:1px solid rgba(0,0,0,.06)}
+.extra-lbl{font-size:.68rem;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem}
+.extra-val{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:700;color:var(--tp)}
+.extra-unit{font-size:.72rem;color:var(--g600);font-weight:600}
+.extra-trend{font-size:.7rem;color:var(--tm);margin-top:.2rem}
+
+/* FOOTER */
+footer{background:#111a10;color:rgba(255,255,255,.6);padding:2.5rem 2rem 2rem;text-align:center}
+.ft-brand{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:white;margin-bottom:.3rem}
+.ft-sub{font-size:.8rem;margin-bottom:.2rem}
+.ft-info{font-size:.75rem;color:rgba(255,255,255,.35);margin-top:.3rem}
+.ft-copy{margin-top:1.25rem;font-size:.72rem;color:rgba(255,255,255,.25);border-top:1px solid rgba(255,255,255,.07);padding-top:1.1rem}
+
+/* DARK TOGGLE */
+.dark-toggle{position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;width:42px;height:42px;background:var(--g600);color:white;border:none;border-radius:50%;font-size:17px;cursor:pointer;box-shadow:var(--shl);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.dark-toggle:hover{background:var(--g700);transform:scale(1.1)}
+
+/* DARK MODE */
+body.dark{--tp:#f0fdf4;--ts:#9ca3af;--tm:#6b7280;background:#0c170c}
+body.dark #input-section,body.dark #table-section,body.dark #rec-section,body.dark #extra-section,body.dark #heatmap-section{background:#121f12}
+body.dark #dashboard,body.dark #cost-section,body.dark #insights-section,body.dark #model-section{background:#0e180e}
+body.dark .dcard,body.dark .ins-card,body.dark .math-card{background:#1a2e1a;border-color:rgba(255,255,255,.07)}
+body.dark .icard{background:#141f14;border-color:rgba(255,255,255,.07)}
+body.dark .manual-input{background:#1a2e1a;border-color:rgba(22,163,74,.3);color:#86efac}
+body.dark nav{background:rgba(12,23,12,.96)}
+body.dark th{background:rgba(22,163,74,.1)}
+body.dark .rec-card{background:linear-gradient(135deg,rgba(22,163,74,.08) 0%,rgba(16,185,129,.04) 100%)}
+body.dark .rec-item,.dark .extra-card{background:#1a2e1a}
+body.dark .extra-card{background:#141f14}
+body.dark .toggle-grp{background:#1a2e1a;border-color:rgba(255,255,255,.06)}
+body.dark .lahan-info-bar{background:rgba(22,163,74,.08)}
+body.dark table{background:#121f12}
+body.dark tr:hover td{background:rgba(22,163,74,.06)}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="ld-logo">🌿 AgriLux</div>
+  <div class="ld-sub">Sistem Optimasi Pencahayaan Pertanian</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
+</div>
+
+<div id="prog"></div>
+
+<nav>
+  <div class="nav-brand">
+    <div class="nav-icon">🌱</div>
+    AgriLux
+  </div>
+  <div class="nav-links">
+    <a onclick="goTo('#input-section')">Input</a>
+    <a onclick="goTo('#dashboard')">Dashboard</a>
+    <a onclick="goTo('#cost-section')">Biaya</a>
+    <a onclick="goTo('#heatmap-section')">Simulasi</a>
+    <a onclick="goTo('#rec-section')">Rekomendasi</a>
+    <a onclick="goTo('#input-section')" class="nav-pill">Mulai Analisis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg1"></div>
+  <div class="hero-bg2"></div>
+  <div class="particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="hero-dot"></div> Smart Farming Technology v2.0</div>
+    <div class="hero-subtitle">Kelompok 7 · TI 07-01 · Telkom University Surabaya</div>
+    <h1>Sistem Optimasi<br><span>Pencahayaan Pertanian</span></h1>
+    <div class="hero-tagline">AgriLux — Smart Agriculture Lighting Optimization</div>
+    <p>Sistem optimasi pencahayaan pertanian berbasis distribusi cahaya dan efisiensi energi. Analisis real-time untuk hasil panen maksimal.</p>
+    <div class="hero-btns">
+      <button class="btn-p" onclick="goTo('#input-section')">🚀 Mulai Analisis</button>
+      <button class="btn-s" onclick="goTo('#heatmap-section')">📡 Lihat Simulasi</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="n">98%</div><div class="l">Akurasi Kalkulasi</div></div>
+      <div class="hstat"><div class="n">4+</div><div class="l">Sumber Energi</div></div>
+      <div class="hstat"><div class="n">40%</div><div class="l">Hemat Energi</div></div>
+      <div class="hstat"><div class="n">24/7</div><div class="l">Monitoring</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INPUT -->
+<section id="input-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">⚙️ Konfigurasi Sistem</div>
+      <h2 class="sec-title">Panel Input Interaktif</h2>
+      <p class="sec-desc">Atur parameter lahan menggunakan slider atau ketik nilai secara langsung.</p>
+    </div>
+    <div class="input-grid fade-in">
+
+      <div class="icard">
+        <div class="icard-head">
+          <div class="icard-label"><div class="icard-icon">📐</div>Panjang Lahan</div>
+          <div class="icard-max">Maks: 200m</div>
+        </div>
+        <div class="val-display" id="vp">10</div>
+        <div class="val-unit">meter</div>
+        <input type="range" id="slp" min="1" max="200" value="10" step="1" oninput="syncSlider('p',this.value)">
+        <div class="slider-row"><span>1m</span><span>200m</span></div>
+        <div class="manual-input-wrap">
+          <label>Ketik manual:</label>
+          <input class="manual-input" id="inp" type="number" min="1" max="200" value="10" oninput="syncManual('p',this.value)">
+          <span style="font-size:.75rem;color:var(--tm)">m</span>
+        </div>
+      </div>
+
+      <div class="icard">
+        <div class="icard-head">
+          <div class="icard-label"><div class="icard-icon">📏</div>Lebar Lahan</div>
+          <div class="icard-max">Maks: 200m</div>
+        </div>
+        <div class="val-display" id="vl">8</div>
+        <div class="val-unit">meter</div>
+        <input type="range" id="sll" min="1" max="200" value="8" step="1" oninput="syncSlider('l',this.value)">
+        <div class="slider-row"><span>1m</span><span>200m</span></div>
+        <div class="manual-input-wrap">
+          <label>Ketik manual:</label>
+          <input class="manual-input" id="inl" type="number" min="1" max="200" value="8" oninput="syncManual('l',this.value)">
+          <span style="font-size:.75rem;color:var(--tm)">m</span>
+        </div>
+      </div>
+
+      <div class="icard">
+        <div class="icard-head">
+          <div class="icard-label"><div class="icard-icon">💡</div>Kebutuhan Lux Tanaman</div>
+          <div class="icard-max">Maks: 100.000 lux</div>
+        </div>
+        <div class="val-display" id="vx">5.000</div>
+        <div class="val-unit">lux</div>
+        <input type="range" id="slx" min="500" max="100000" value="5000" step="500" oninput="syncSlider('x',this.value)">
+        <div class="slider-row"><span>500</span><span>100.000</span></div>
+        <div class="manual-input-wrap">
+          <label>Ketik manual:</label>
+          <input class="manual-input" id="inx" type="number" min="500" max="100000" value="5000" oninput="syncManual('x',this.value)">
+          <span style="font-size:.75rem;color:var(--tm)">lux</span>
+        </div>
+      </div>
+
+      <div class="icard">
+        <div class="icard-head">
+          <div class="icard-label"><div class="icard-icon">⏱️</div>Lama Penyinaran</div>
+          <div class="icard-max">Maks: 24 jam</div>
+        </div>
+        <div class="val-display" id="vj">12</div>
+        <div class="val-unit">jam / hari</div>
+        <input type="range" id="slj" min="1" max="24" value="12" step="1" oninput="syncSlider('j',this.value)">
+        <div class="slider-row"><span>1 jam</span><span>24 jam</span></div>
+        <div class="manual-input-wrap">
+          <label>Ketik manual:</label>
+          <input class="manual-input" id="inj" type="number" min="1" max="24" value="12" oninput="syncManual('j',this.value)">
+          <span style="font-size:.75rem;color:var(--tm)">jam</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="lahan-info-bar fade-in">
+      <div style="font-size:1.8rem">🏡</div>
+      <div>
+        <div style="font-weight:700;color:var(--g700);font-size:.88rem">Ukuran Lahan Real-time</div>
+        <div style="font-size:.84rem;color:var(--ts)" id="lahan-info-text">Lahan 10m × 8m = 80 m² · Butuh 400.000 lumen total</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">📊 Live Dashboard</div>
+      <h2 class="sec-title">Kalkulasi Real-time</h2>
+      <p class="sec-desc">Semua hasil berubah otomatis saat Anda mengubah parameter input.</p>
+    </div>
+    <div class="dash-grid fade-in">
+      <div class="dcard"><div class="dcard-icon" style="background:#dcfce7">🗺️</div><div class="dcard-lbl">Luas Lahan</div><div class="dcard-val" id="d-luas">80 <span class="dcard-unit">m²</span></div></div>
+      <div class="dcard"><div class="dcard-icon" style="background:#dbeafe">✨</div><div class="dcard-lbl">Total Lumen</div><div class="dcard-val" id="d-lumen">400K <span class="dcard-unit">lm</span></div></div>
+      <div class="dcard"><div class="dcard-icon" style="background:#fef9c3">💡</div><div class="dcard-lbl">Lampu LED 100W</div><div class="dcard-val" id="d-lampu">4 <span class="dcard-unit">unit</span></div></div>
+      <div class="dcard"><div class="dcard-icon" style="background:#ffe4e6">⚡</div><div class="dcard-lbl">Total Daya</div><div class="dcard-val" id="d-daya">400 <span class="dcard-unit">W</span></div></div>
+      <div class="dcard"><div class="dcard-icon" style="background:#fef3c7">🔋</div><div class="dcard-lbl">Energi Harian</div><div class="dcard-val" id="d-harian">4.8 <span class="dcard-unit">kWh</span></div></div>
+      <div class="dcard"><div class="dcard-icon" style="background:#ede9fe">📅</div><div class="dcard-lbl">Energi Bulanan</div><div class="dcard-val" id="d-bulanan">144 <span class="dcard-unit">kWh</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TABLE -->
+<section id="table-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">🔦 Perbandingan Lampu</div>
+      <h2 class="sec-title">Analisis Tipe Pencahayaan</h2>
+      <p class="sec-desc">Performa berbagai jenis lampu untuk kebutuhan pertanian Anda.</p>
+    </div>
+    <div class="table-wrap fade-in">
+      <table>
+        <thead><tr>
+          <th>Tipe Lampu</th><th>Jumlah</th><th>Total Daya</th>
+          <th>Energi/Hari</th><th>Biaya PLN/Bulan</th><th>Biaya Solar/Bulan</th>
+          <th>Efisiensi</th><th>Status</th>
+        </tr></thead>
+        <tbody id="lamp-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- COST -->
+<section id="cost-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">💰 Perbandingan Biaya</div>
+      <h2 class="sec-title">Analisis Biaya Sumber Energi</h2>
+      <p class="sec-desc">Bandingkan biaya operasional dari berbagai sumber energi.</p>
+    </div>
+    <div class="fade-in">
+      <div class="toggle-grp">
+        <button class="tgl-btn on" id="btn-m" onclick="setPeriod('m')">Bulanan</button>
+        <button class="tgl-btn" id="btn-y" onclick="setPeriod('y')">Tahunan</button>
+      </div>
+      <div style="position:relative;width:100%;height:300px">
+        <canvas id="costChart" role="img" aria-label="Bar chart perbandingan biaya energi PLN, Diesel, Solar Panel, Hybrid">Perbandingan biaya energi berbagai sumber.</canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEATMAP IMPROVED -->
+<section id="heatmap-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">🗺️ Light Distribution</div>
+      <h2 class="sec-title">Simulasi Distribusi Cahaya</h2>
+      <p class="sec-desc">Visualisasi heatmap interaktif posisi lampu dan intensitas cahaya pada lahan.</p>
+    </div>
+    <div class="hmap-container fade-in">
+      <div class="hmap-header">
+        <div class="hmap-title">🌿 AgriLux Light Simulation</div>
+        <div class="hmap-meta">
+          <div class="hmap-chip active" id="chip-lamps">💡 — lampu aktif</div>
+          <div class="hmap-chip" id="chip-area">📐 — m²</div>
+          <div class="hmap-chip" id="chip-lux">☀️ — lux target</div>
+        </div>
+      </div>
+      <div style="position:relative">
+        <canvas id="heatmapCanvas" height="400"></canvas>
+        <div id="hmap-tooltip-box"></div>
+      </div>
+      <div class="hmap-controls">
+        <span style="font-size:.72rem;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.07em">Tampilan:</span>
+        <button class="hmap-ctrl-btn on" id="hbtn-heat" onclick="setHmapMode('heat')">🌡️ Heatmap</button>
+        <button class="hmap-ctrl-btn" id="hbtn-grid" onclick="setHmapMode('grid')">📐 Grid View</button>
+        <button class="hmap-ctrl-btn" id="hbtn-zone" onclick="setHmapMode('zone')">🎯 Zone View</button>
+        <button class="hmap-ctrl-btn" onclick="drawHeatmap()" style="margin-left:auto">🔄 Refresh</button>
+      </div>
+      <div class="hmap-info-bar">
+        <div class="hmap-stat"><div class="hmap-stat-val" id="hs-avg">—</div><div class="hmap-stat-lbl">Rata-rata Lux</div></div>
+        <div class="hmap-stat"><div class="hmap-stat-val" id="hs-max">—</div><div class="hmap-stat-lbl">Lux Tertinggi</div></div>
+        <div class="hmap-stat"><div class="hmap-stat-val" id="hs-cov">—</div><div class="hmap-stat-lbl">Coverage Area</div></div>
+        <div class="hmap-stat"><div class="hmap-stat-val" id="hs-uni">—</div><div class="hmap-stat-lbl">Uniformity</div></div>
+      </div>
+      <div class="hmap-legend">
+        <span style="font-size:.7rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em">Intensitas:</span>
+        <div class="hleg-item"><div class="hleg-dot" style="background:#052e16"></div>Sangat Tinggi</div>
+        <div class="hleg-item"><div class="hleg-dot" style="background:#16a34a"></div>Tinggi</div>
+        <div class="hleg-item"><div class="hleg-dot" style="background:#4ade80"></div>Sedang</div>
+        <div class="hleg-item"><div class="hleg-dot" style="background:#bbf7d0"></div>Rendah</div>
+        <div class="hleg-item"><div class="hleg-dot" style="background:#166534;border-radius:50%"></div>Posisi Lampu</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHTS -->
+<section id="insights-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">🧠 AI Insights</div>
+      <h2 class="sec-title">Analisis Efisiensi Energi</h2>
+      <p class="sec-desc">Rekomendasi berbasis data untuk sistem pencahayaan optimal.</p>
+    </div>
+    <div class="ins-grid fade-in" id="ins-grid"></div>
+  </div>
+</section>
+
+<!-- REC -->
+<section id="rec-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">⭐ Best Pick</div>
+      <h2 class="sec-title">Rekomendasi Sistem Terbaik</h2>
+    </div>
+    <div class="rec-card fade-in">
+      <div class="rec-glow"></div>
+      <div class="rec-left">
+        <div class="rec-badge">⭐ Sistem Direkomendasikan</div>
+        <div class="rec-title">LED Grow Light + Solar Panel</div>
+        <div class="rec-desc">Sistem optimal untuk efisiensi energi dan produktivitas tanaman maksimal dengan biaya operasional terendah jangka panjang.</div>
+        <div class="rec-items">
+          <div class="rec-item"><div class="rec-item-lbl">Lampu Terbaik</div><div class="rec-item-val">LED Grow Light</div></div>
+          <div class="rec-item"><div class="rec-item-lbl">Jumlah Optimal</div><div class="rec-item-val" id="rec-count">— unit</div></div>
+          <div class="rec-item"><div class="rec-item-lbl">Sumber Energi</div><div class="rec-item-val">Solar Panel</div></div>
+          <div class="rec-item"><div class="rec-item-lbl">Biaya/Bulan</div><div class="rec-item-val" id="rec-cost">—</div></div>
+        </div>
+      </div>
+      <div class="rec-right">
+        <div class="score-ring">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="46" fill="none" stroke="#dcfce7" stroke-width="9"/>
+            <circle id="score-arc" cx="55" cy="55" r="46" fill="none" stroke="#16a34a" stroke-width="9" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="43"/>
+          </svg>
+          <div class="score-num" id="score-num">85%</div>
+        </div>
+        <div class="score-lbl">Efficiency Score</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODEL -->
+<section id="model-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">📐 Model MILP</div>
+      <h2 class="sec-title">Model Matematis Optimasi</h2>
+      <p class="sec-desc">Formulasi Mixed Integer Linear Programming untuk optimasi pencahayaan.</p>
+    </div>
+    <div class="math-grid fade-in">
+      <div class="math-card"><div class="math-tag">Fungsi Tujuan</div><div class="math-eq">Min Z = Σ CⱼYⱼ + Σ EᵢXᵢ</div><div class="math-desc">Meminimalkan total biaya instalasi (C) dikalikan variabel biner pemilihan (Y) ditambah biaya energi operasional (E) per unit lampu (X).</div></div>
+      <div class="math-card"><div class="math-tag">Constraint 1 — Kebutuhan Lux</div><div class="math-eq">Σ XᵢIᵢ ≥ Dmin</div><div class="math-desc">Total intensitas cahaya semua lampu aktif harus memenuhi kebutuhan minimum lux tanaman (Dmin = <span id="m-dmin">5.000</span> lux).</div></div>
+      <div class="math-card"><div class="math-tag">Constraint 2 — Kapasitas Daya</div><div class="math-eq">Σ Yⱼ ≥ Σ XᵢPᵢ</div><div class="math-desc">Total kapasitas sumber energi harus mencukupi kebutuhan daya lampu aktif untuk memastikan sistem tidak kekurangan daya.</div></div>
+      <div class="math-card"><div class="math-tag">Constraint 3 — Coverage</div><div class="math-eq">Σ Aᵢⱼ · Xᵢ ≥ Luas</div><div class="math-desc">Setiap titik lahan harus mendapatkan pencahayaan cukup. Matriks A memastikan distribusi merata pada area <span id="m-luas">80</span> m².</div></div>
+      <div class="math-card"><div class="math-tag">Constraint 4 — Biner</div><div class="math-eq">Xᵢ ∈ {0,1}, Yⱼ ∈ ℤ⁺</div><div class="math-desc">Variabel pemilihan lampu (X) bersifat biner, sedangkan jumlah lampu (Y) adalah bilangan bulat positif ≥ 0.</div></div>
+      <div class="math-card"><div class="math-tag">Constraint 5 — Energi Harian</div><div class="math-eq">Eday = P · T / 1000</div><div class="math-desc">Energi harian (kWh) dari total daya (P) dikali durasi penyinaran (T = <span id="m-jam">12</span> jam) dibagi 1000 untuk konversi ke kilowatt-hour.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXTRA -->
+<section id="extra-section">
+  <div class="container">
+    <div class="fade-in">
+      <div class="sec-tag">📈 Informasi Tambahan</div>
+      <h2 class="sec-title">Statistik & Sustainability</h2>
+    </div>
+    <div class="extra-grid fade-in" id="extra-grid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft-brand">🌿 AgriLux — Sistem Optimasi Pencahayaan Pertanian</div>
+  <div class="ft-sub">Smart Agriculture Lighting Optimization</div>
+  <div class="ft-info">Kelompok 7 · Kelas TI 07-01 · Telkom University Surabaya</div>
+  <div class="ft-info" style="margin-top:.15rem">Mata Kuliah: Riset Operasi Lanjut</div>
+  <div class="ft-copy">© 2024 AgriLux Project — Kelompok 7 TI 07-01 Telkom University Surabaya. All rights reserved.</div>
+</footer>
+
+<button class="dark-toggle" id="dkToggle" onclick="toggleDark()">🌙</button>
+
+<script>
+// STATE
+let S={p:10,l:8,x:5000,j:12};
+let period='m';
+let hmapMode='heat';
+let cChart=null;
+let isDark=false;
+let lampPos=[];
+
+// LOADING
+setTimeout(()=>document.getElementById('loading').classList.add('gone'),1700);
+
+// PARTICLES
+(()=>{
+  const c=document.getElementById('particles');
+  for(let i=0;i<14;i++){
+    const el=document.createElement('div');
+    el.className='particle';
+    const sz=3+Math.random()*7;
+    el.style.cssText=`left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${Math.random()>.5?'#22c55e':'#10b981'};animation-duration:${7+Math.random()*10}s;animation-delay:${Math.random()*9}s`;
+    c.appendChild(el);
+  }
+})();
+
+// SCROLL
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('prog').style.width=(window.scrollY/h*100)+'%';
+  document.querySelectorAll('.fade-in').forEach(el=>{
+    if(el.getBoundingClientRect().top<window.innerHeight-50)el.classList.add('vis');
+  });
+});
+setTimeout(()=>window.dispatchEvent(new Event('scroll')),150);
+
+function goTo(sel){
+  const el=document.querySelector(sel);
+  if(el)el.scrollIntoView({behavior:'smooth'});
+}
+
+function toggleDark(){
+  isDark=!isDark;
+  document.body.classList.toggle('dark',isDark);
+  document.getElementById('dkToggle').textContent=isDark?'☀️':'🌙';
+  if(cChart)buildCostChart();
+}
+
+// SLIDER FILL
+function fillSlider(el){
+  const pct=(el.value-el.min)/(el.max-el.min)*100;
+  el.style.background=`linear-gradient(90deg,var(--g400) ${pct}%,#e2e8f0 ${pct}%)`;
+}
+
+// SYNC SLIDER → everything
+function syncSlider(k,v){
+  v=clamp(k,+v);
+  S[k]=v;
+  updateDisplays(k);
+  update();
+}
+// SYNC MANUAL INPUT → slider + everything
+function syncManual(k,v){
+  v=clamp(k,+v);
+  if(isNaN(v)||v<=0)return;
+  S[k]=v;
+  const sl=document.getElementById('sl'+k);
+  sl.value=Math.min(v,+sl.max);
+  fillSlider(sl);
+  updateDisplays(k);
+  update();
+}
+function clamp(k,v){
+  const maxes={p:200,l:200,x:100000,j:24};
+  const mins={p:1,l:1,x:500,j:1};
+  return Math.min(maxes[k],Math.max(mins[k],v||mins[k]));
+}
+function updateDisplays(k){
+  const fmts={p:v=>v,l:v=>v,x:v=>v.toLocaleString('id'),j:v=>v};
+  document.getElementById('v'+k).textContent=fmts[k](S[k]);
+  document.getElementById('in'+k).value=S[k];
+  fillSlider(document.getElementById('sl'+k));
+}
+
+// COMPUTE
+function compute(){
+  const {p,l,x,j}=S;
+  const area=p*l;
+  const totalLm=area*x;
+  const lamps={
+    'LED 50W':{lm:5000,w:50,price:75000,life:35000,lmW:100},
+    'LED 100W':{lm:10000,w:100,price:120000,life:35000,lmW:100},
+    'LED Grow Light':{lm:14000,w:150,price:350000,life:50000,lmW:93},
+    'Lampu Biasa':{lm:1500,w:100,price:25000,life:1000,lmW:15}
+  };
+  const PLN=1444.7,DSL=3500,SOL=500,HYB=900;
+  const res={};
+  Object.entries(lamps).forEach(([n,e])=>{
+    const cnt=Math.ceil(totalLm/e.lm);
+    const tw=cnt*e.w;
+    const khd=tw*j/1000;
+    const khm=khd*30;
+    res[n]={cnt,tw,khd,khm,
+      cPLN:khm*PLN,cDsl:khm*DSL,cSol:khm*SOL,cHyb:khm*HYB,
+      eff:Math.min(100,Math.round(e.lmW/140*100)),
+      lmW:e.lmW,life:e.life};
+  });
+  return{area,totalLm,res};
+}
+
+// MAIN UPDATE
+function update(){
+  const {p,l,x,j}=S;
+  const {area,totalLm,res}=compute();
+  const r100=res['LED 100W'];
+  // dashboard
+  document.getElementById('d-luas').innerHTML=`${area.toLocaleString('id')} <span class="dcard-unit">m²</span>`;
+  document.getElementById('d-lumen').innerHTML=`${(totalLm/1000).toFixed(0)}K <span class="dcard-unit">lm</span>`;
+  document.getElementById('d-lampu').innerHTML=`${r100.cnt} <span class="dcard-unit">unit</span>`;
+  document.getElementById('d-daya').innerHTML=`${r100.tw.toLocaleString('id')} <span class="dcard-unit">W</span>`;
+  document.getElementById('d-harian').innerHTML=`${r100.khd.toFixed(1)} <span class="dcard-unit">kWh</span>`;
+  document.getElementById('d-bulanan').innerHTML=`${r100.khm.toFixed(0)} <span class="dcard-unit">kWh</span>`;
+  document.getElementById('lahan-info-text').textContent=`Lahan ${p}m × ${l}m = ${area.toLocaleString('id')} m² · Butuh ${(totalLm/1000).toFixed(0)}K lumen total`;
+  // chips heatmap
+  const grow=res['LED Grow Light'];
+  document.getElementById('chip-lamps').textContent=`💡 ${grow.cnt} lampu aktif`;
+  document.getElementById('chip-area').textContent=`📐 ${area.toLocaleString('id')} m²`;
+  document.getElementById('chip-lux').textContent=`☀️ ${x.toLocaleString('id')} lux`;
+  // table
+  buildTable(res);
+  // chart
+  buildCostChart();
+  // heatmap
+  drawHeatmap();
+  // insights
+  buildInsights(res,area);
+  // rec
+  buildRec(res,area);
+  // math
+  document.getElementById('m-dmin').textContent=x.toLocaleString('id');
+  document.getElementById('m-luas').textContent=area.toLocaleString('id');
+  document.getElementById('m-jam').textContent=j;
+  // extra
+  buildExtra(res,area);
+}
+
+// TABLE
+function buildTable(res){
+  const order=['LED 50W','LED 100W','LED Grow Light','Lampu Biasa'];
+  const cats={'LED Grow Light':'bg-rec','LED 100W':'bg-green','LED 50W':'bg-blue','Lampu Biasa':'bg-orange'};
+  const labels={'LED Grow Light':'⭐ Optimal','LED 100W':'✅ Efisien','LED 50W':'⚡ Hemat Daya','Lampu Biasa':'⚠️ Kurang Efisien'};
+  document.getElementById('lamp-tbody').innerHTML=order.map(n=>{
+    const r=res[n];
+    return`<tr>
+      <td><strong style="color:var(--tp)">${n}</strong></td>
+      <td>${r.cnt} unit</td><td>${r.tw.toLocaleString('id')} W</td>
+      <td>${r.khd.toFixed(1)} kWh</td>
+      <td>Rp ${Math.round(r.cPLN).toLocaleString('id')}</td>
+      <td>Rp ${Math.round(r.cSol).toLocaleString('id')}</td>
+      <td>${r.eff}%</td>
+      <td><span class="badge ${cats[n]}">${labels[n]}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// COST CHART
+function buildCostChart(){
+  const {res}=compute();
+  const g=res['LED Grow Light'];
+  const m=period==='y'?12:1;
+  const data=[g.cPLN,g.cDsl,g.cSol,g.cHyb].map(v=>Math.round(v*m));
+  const labels=['PLN','Diesel','Solar Panel','Hybrid'];
+  const colors=['#3b82f6','#ef4444','#22c55e','#f59e0b'];
+  if(cChart)cChart.destroy();
+  cChart=new Chart(document.getElementById('costChart').getContext('2d'),{
+    type:'bar',
+    data:{labels,datasets:[{
+      label:period==='y'?'Biaya Tahunan':'Biaya Bulanan',
+      data,
+      backgroundColor:colors.map(c=>c+'28'),
+      borderColor:colors,borderWidth:2,borderRadius:10,borderSkipped:false
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Rp ${ctx.raw.toLocaleString('id')}`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#6b7280',font:{family:'Inter',size:12}}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#6b7280',font:{family:'Inter',size:11},callback:v=>'Rp '+(v>=1000000?(v/1000000).toFixed(1)+'jt':(v/1000).toFixed(0)+'rb')}}}}
+  });
+}
+
+function setPeriod(p){
+  period=p;
+  document.getElementById('btn-m').classList.toggle('on',p==='m');
+  document.getElementById('btn-y').classList.toggle('on',p==='y');
+  buildCostChart();
+}
+
+// HEATMAP MODE
+function setHmapMode(m){
+  hmapMode=m;
+  ['heat','grid','zone'].forEach(id=>{
+    document.getElementById('hbtn-'+id).classList.toggle('on',id===m);
+  });
+  drawHeatmap();
+}
+
+// IMPROVED HEATMAP
+function drawHeatmap(){
+  const canvas=document.getElementById('heatmapCanvas');
+  const {p,l,x}=S;
+  const {area,res}=compute();
+  const nLamps=Math.min(res['LED Grow Light'].cnt,24);
+  const W=canvas.width=Math.min(900,canvas.parentElement.offsetWidth||700);
+  const H=canvas.height=400;
+  const ctx=canvas.getContext('2d');
+  const pad=36,fw=W-2*pad,fh=H-2*pad;
+
+  // compute lamp positions grid
+  const cols=Math.max(1,Math.ceil(Math.sqrt(nLamps*(p/l+.001))));
+  const rows=Math.ceil(nLamps/cols);
+  lampPos=[];
+  for(let r=0;r<rows;r++)for(let c=0;c<cols&&lampPos.length<nLamps;c++){
+    lampPos.push({x:pad+fw*(c+.5)/cols,y:pad+fh*(r+.5)/rows});
+  }
+
+  ctx.clearRect(0,0,W,H);
+
+  if(hmapMode==='heat'){
+    drawHeat(ctx,W,H,pad,fw,fh,nLamps,x);
+  } else if(hmapMode==='grid'){
+    drawGrid(ctx,W,H,pad,fw,fh,nLamps,x,cols,rows);
+  } else {
+    drawZone(ctx,W,H,pad,fw,fh,nLamps,x);
+  }
+
+  // Draw lamp markers
+  lampPos.forEach((lp,i)=>{
+    // glow
+    const grd=ctx.createRadialGradient(lp.x,lp.y,0,lp.x,lp.y,22);
+    grd.addColorStop(0,'rgba(253,224,71,.45)');
+    grd.addColorStop(1,'rgba(253,224,71,0)');
+    ctx.beginPath();ctx.arc(lp.x,lp.y,22,0,Math.PI*2);
+    ctx.fillStyle=grd;ctx.fill();
+    // circle
+    ctx.beginPath();ctx.arc(lp.x,lp.y,10,0,Math.PI*2);
+    ctx.fillStyle='#f59e0b';ctx.fill();
+    ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();
+    // number
+    ctx.fillStyle='#1a1600';ctx.font='bold 8px Inter';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i+1,lp.x,lp.y);
+  });
+
+  // Border + label
+  ctx.strokeStyle='rgba(34,197,94,.4)';ctx.lineWidth=1.5;
+  ctx.strokeRect(pad,pad,fw,fh);
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='600 11px Inter';
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText(`${p}m`,pad+4,pad+5);
+  ctx.save();ctx.translate(pad+4,pad+fh);ctx.rotate(-Math.PI/2);
+  ctx.fillText(`${l}m`,4,-4);ctx.restore();
+
+  // Stats
+  const res2=Math.min(20,Math.floor(Math.min(fw,fh)/12));
+  let total=0,maxLux=0,covered=0;
+  for(let r=0;r<res2;r++)for(let c=0;c<res2;c++){
+    const cx=pad+fw*(c+.5)/res2,cy=pad+fh*(r+.5)/res2;
+    let v=calcLux(cx,cy,fw,fh,nLamps,cols,rows)*x;
+    total+=v;if(v>maxLux)maxLux=v;if(v>x*.3)covered++;
+  }
+  const cells=res2*res2;
+  const avg=Math.round(total/cells);
+  document.getElementById('hs-avg').textContent=avg.toLocaleString('id')+' lux';
+  document.getElementById('hs-max').textContent=Math.round(maxLux).toLocaleString('id')+' lux';
+  document.getElementById('hs-cov').textContent=Math.round(covered/cells*100)+'%';
+  document.getElementById('hs-uni').textContent=Math.round(avg/Math.max(1,Math.round(maxLux))*100)+'%';
+
+  // Hover
+  canvas.onmousemove=e=>{
+    const rect=canvas.getBoundingClientRect();
+    const mx=(e.clientX-rect.left)*W/rect.width;
+    const my=(e.clientY-rect.top)*H/rect.height;
+    const tip=document.getElementById('hmap-tooltip-box');
+    if(mx>pad&&mx<pad+fw&&my>pad&&my<pad+fh){
+      const v=calcLux(mx,my,fw,fh,nLamps,cols,rows)*x;
+      const xm=((mx-pad)/fw*p).toFixed(1);
+      const ym=((my-pad)/fh*l).toFixed(1);
+      const pct=Math.round(v/x*100);
+      tip.textContent=`📍 (${xm}m, ${ym}m)  ·  ${Math.round(v).toLocaleString('id')} lux  ·  ${pct}% target`;
+      tip.style.opacity='1';
+      tip.style.left=(e.offsetX+14)+'px';
+      tip.style.top=Math.max(4,(e.offsetY-40))+'px';
+    } else tip.style.opacity='0';
+  };
+  canvas.onmouseleave=()=>document.getElementById('hmap-tooltip-box').style.opacity='0';
+}
+
+function calcLux(cx,cy,fw,fh,nLamps,cols,rows){
+  let v=0;
+  lampPos.forEach(lp=>{
+    const d=Math.sqrt((cx-lp.x)**2+(cy-lp.y)**2);
+    const r=Math.min(fw/cols,fh/rows)*.95;
+    v+=Math.max(0,1-d/r);
+  });
+  return Math.min(1,v);
+}
+
+function drawHeat(ctx,W,H,pad,fw,fh,nLamps,lux){
+  const {p,l}=S;
+  const {res}=compute();
+  const cols2=Math.max(1,Math.ceil(Math.sqrt(nLamps*(p/l+.001))));
+  const rows2=Math.ceil(nLamps/cols2);
+  // draw per pixel row using offscreen canvas for speed
+  const res2=80;
+  const cw=fw/res2,ch=fh/res2;
+  for(let r=0;r<res2;r++){
+    for(let c=0;c<res2;c++){
+      const cx=pad+c*cw+cw/2,cy=pad+r*ch+ch/2;
+      const v=calcLux(cx,cy,fw,fh,nLamps,cols2,rows2);
+      ctx.fillStyle=luxColor(v);
+      ctx.fillRect(pad+c*cw,pad+r*ch,cw+1,ch+1);
+    }
+  }
+}
+
+function drawGrid(ctx,W,H,pad,fw,fh,nLamps,lux){
+  const {p,l}=S;
+  const cols2=Math.max(1,Math.ceil(Math.sqrt(nLamps*(p/l+.001))));
+  const rows2=Math.ceil(nLamps/cols2);
+  // Background
+  ctx.fillStyle='#0a1f0a';ctx.fillRect(pad,pad,fw,fh);
+  // Grid cells
+  const gcols=Math.max(cols2*2,8),grows=Math.max(rows2*2,8);
+  const cw=fw/gcols,ch=fh/grows;
+  for(let r=0;r<grows;r++){
+    for(let c=0;c<gcols;c++){
+      const cx=pad+c*cw+cw/2,cy=pad+r*ch+ch/2;
+      const v=calcLux(cx,cy,fw,fh,nLamps,cols2,rows2);
+      const alpha=v*.9+.05;
+      ctx.fillStyle=`rgba(34,197,94,${alpha})`;
+      ctx.fillRect(pad+c*cw+1,pad+r*ch+1,cw-2,ch-2);
+      // lux label
+      if(cw>40){
+        ctx.fillStyle=`rgba(255,255,255,${Math.min(1,v*1.5)})`;
+        ctx.font=`500 9px Inter`;ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(Math.round(v*lux/1000)+'k',cx,cy);
+      }
+    }
+  }
+  // Grid lines
+  ctx.strokeStyle='rgba(34,197,94,.15)';ctx.lineWidth=.5;
+  for(let c=0;c<=gcols;c++){ctx.beginPath();ctx.moveTo(pad+c*cw,pad);ctx.lineTo(pad+c*cw,pad+fh);ctx.stroke();}
+  for(let r=0;r<=grows;r++){ctx.beginPath();ctx.moveTo(pad,pad+r*ch);ctx.lineTo(pad+fw,pad+r*ch);ctx.stroke();}
+}
+
+function drawZone(ctx,W,H,pad,fw,fh,nLamps,lux){
+  const {p,l}=S;
+  const cols2=Math.max(1,Math.ceil(Math.sqrt(nLamps*(p/l+.001))));
+  const rows2=Math.ceil(nLamps/cols2);
+  // bg
+  ctx.fillStyle='#081208';ctx.fillRect(pad,pad,fw,fh);
+  // draw zones as concentric circles per lamp
+  lampPos.forEach(lp=>{
+    const r=Math.min(fw/cols2,fh/rows2)*.95;
+    [[1,'.3'],[.7,'.25'],[.4,'.2'],[.2,'.15']].forEach(([scale,alpha])=>{
+      const grd=ctx.createRadialGradient(lp.x,lp.y,0,lp.x,lp.y,r*scale);
+      grd.addColorStop(0,`rgba(34,197,94,${alpha})`);
+      grd.addColorStop(.6,`rgba(134,239,172,${+alpha*.5})`);
+      grd.addColorStop(1,'rgba(34,197,94,0)');
+      ctx.beginPath();ctx.arc(lp.x,lp.y,r*scale,0,Math.PI*2);
+      ctx.fillStyle=grd;ctx.fill();
+    });
+  });
+  // Zone rings with label
+  lampPos.forEach(lp=>{
+    const r=Math.min(fw/cols2,fh/rows2)*.95;
+    [[1,'High'],[.6,'Mid'],[.3,'Low']].forEach(([scale,label])=>{
+      ctx.beginPath();ctx.arc(lp.x,lp.y,r*scale,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(34,197,94,${.4*scale})`;ctx.lineWidth=1;
+      ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+    });
+  });
+}
+
+function luxColor(v){
+  if(v>.85)return'rgba(5,46,22,.95)';
+  if(v>.65)return`rgba(22,101,52,${.8+v*.15})`;
+  if(v>.45)return`rgba(34,197,94,${.5+v*.4})`;
+  if(v>.25)return`rgba(134,239,172,${.3+v*.5})`;
+  if(v>.1)return`rgba(187,247,208,${.2+v*.4})`;
+  return'rgba(10,30,10,.15)';
+}
+
+// INSIGHTS
+function buildInsights(res,area){
+  const g=res['LED Grow Light'];const r100=res['LED 100W'];
+  const save=Math.round((r100.cPLN-g.cSol)/r100.cPLN*100);
+  const items=[
+    {ico:'💰',bg:'#dcfce7',name:'Penghematan vs PLN',val:`${save}%`,sub:'Solar Panel vs PLN (LED Grow Light)',prog:save},
+    {ico:'⚡',bg:'#fef9c3',name:'Efisiensi Sistem',val:`${g.eff}%`,sub:'LED Grow Light lm/W rating',prog:g.eff},
+    {ico:'🔋',bg:'#dbeafe',name:'Konsumsi Harian',val:`${g.khd.toFixed(1)} kWh`,sub:`${S.j} jam penyinaran/hari`,prog:Math.min(100,g.khd*3)},
+    {ico:'🌱',bg:'#ede9fe',name:'Sustainability Score',val:`${Math.min(100,82+Math.round(area/60))}%`,sub:'Estimasi dampak lingkungan',prog:Math.min(100,82+Math.round(area/60))},
+    {ico:'♻️',bg:'#fce7f3',name:'Reduksi Karbon',val:`${(g.khm*.5).toFixed(0)} kg`,sub:'CO₂ eq/bulan vs diesel',prog:Math.min(100,g.khm*.5/15*100)},
+    {ico:'📅',bg:'#ffedd5',name:'Biaya Tahunan Solar',val:`Rp ${(g.cSol*12/1000000).toFixed(1)}jt`,sub:'Estimasi operasional/tahun',prog:45}
+  ];
+  document.getElementById('ins-grid').innerHTML=items.map(it=>`
+    <div class="ins-card">
+      <div class="ins-head"><div class="ins-ico" style="background:${it.bg}">${it.ico}</div><div class="ins-name">${it.name}</div></div>
+      <div class="ins-val">${it.val}</div>
+      <div class="ins-sub">${it.sub}</div>
+      <div class="prog-wrap"><div class="prog-fill" style="width:${Math.max(4,it.prog)}%"></div></div>
+    </div>`).join('');
+}
+
+// REC
+function buildRec(res,area){
+  const g=res['LED Grow Light'];
+  const score=Math.min(94,78+Math.round(area/55));
+  document.getElementById('rec-count').textContent=`${g.cnt} unit`;
+  document.getElementById('rec-cost').textContent=`Rp ${(g.cSol/1000).toFixed(0)}rb/bln`;
+  document.getElementById('score-num').textContent=`${score}%`;
+  const circ=2*Math.PI*46;
+  document.getElementById('score-arc').setAttribute('stroke-dashoffset',(circ*(1-score/100)).toFixed(1));
+}
+
+// EXTRA
+function buildExtra(res,area){
+  const g=res['LED Grow Light'];const r100=res['LED 100W'];
+  const items=[
+    {lbl:'Konsumsi Listrik/Bulan',val:g.khm.toFixed(0),unit:'kWh',t:'LED Grow Light'},
+    {lbl:'Biaya Tahunan PLN',val:`Rp ${(r100.cPLN*12/1000000).toFixed(1)}`,unit:'juta',t:'LED 100W'},
+    {lbl:'Efisiensi Lumen/Watt',val:g.lmW,unit:'lm/W',t:'LED Grow Light'},
+    {lbl:'Umur Lampu',val:'50.000',unit:'jam',t:'LED Grow Light'},
+    {lbl:'Tingkat Pencahayaan',val:S.x.toLocaleString('id'),unit:'lux',t:'Target terpenuhi ✅'},
+    {lbl:'Carbon Reduction',val:(g.khm*.5*12).toFixed(0),unit:'kg CO₂/thn',t:'vs sumber diesel'},
+    {lbl:'Sustainability Score',val:Math.min(100,82+Math.round(area/60)),unit:'/ 100',t:'Sangat Baik 🌿'},
+    {lbl:'Status Energi',val:'Optimal',unit:'',t:'Solar + LED Grow ⭐'}
+  ];
+  document.getElementById('extra-grid').innerHTML=items.map(it=>`
+    <div class="extra-card">
+      <div class="extra-lbl">${it.lbl}</div>
+      <div class="extra-val">${it.val} <span class="extra-unit">${it.unit}</span></div>
+      <div class="extra-trend">${it.t}</div>
+    </div>`).join('');
+}
+
+// INIT
+['slp','sll','slx','slj'].forEach(id=>fillSlider(document.getElementById(id)));
+update();
+</script>
+</body>
+</html>
